@@ -3,18 +3,38 @@ version: '3.1'
 services:
 
   redmine:
-    image: redmine
+    image: redmine:latest
     restart: always
+    networks:
+     - redmine
+    volumes:
+     - redmine-data:/user/src/redmine/files
     ports:
       - 80:3000
     environment:
       REDMINE_DB_MARIADB: db
-      REDMINE_DB_PASSWORD: example
+      REDMINE_DB_USERNAME: ruser
+      REDMINE_DB_PASSWORD: rpassword
       REDMINE_SECRET_KEY_BASE: supersecretkey
 
   db:
-    image: mariadb
+    image: mariadb:latest
     restart: always
+    networks:
+     - redmine
+    volumes: 
+     - mariadb-data:/var/libe/mariadb/data
     environment:
-      MYSQL_ROOT_PASSWORD: example
+      MYSQL_ROOT_PASSWORD: secure
+      MYSQL_USER: ruser
+      MYSQL_PASSWORD:  rpassword
       MARIADB_DATABASE: redmine
+
+volumes:
+
+ redmine-data:
+ mariadb-data:
+ 
+networks:
+ redmine:
+   driver: bridge
